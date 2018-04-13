@@ -1,6 +1,8 @@
 """
-Simple platform to control Tuya based bulbs.
+Simple platform to control **SOME** Tuya switch devices.
 
+For more details about this platform, please refer to the documentation at
+https://home-assistant.io/components/switch.tuya/
 """
 import voluptuous as vol
 from homeassistant.components.light import (Light, ATTR_HS_COLOR, ATTR_BRIGHTNESS, SUPPORT_BRIGHTNESS, SUPPORT_COLOR, PLATFORM_SCHEMA, SUPPORT_COLOR_TEMP, ATTR_COLOR_TEMP)
@@ -14,8 +16,6 @@ CONF_DEVICE_ID = 'device_id'
 CONF_LOCAL_KEY = 'local_key'
 
 DEFAULT_ID = '1'
-DEFAULT_BRIGHTNESS_SCALE = 255
-DEFAULT_WHITE_VALUE_SCALE = 255
 
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -27,7 +27,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 
 def setup_platform(hass, config, add_devices, discovery_info=None):
-    """Set up of the Tuya bulb."""
+    """Set up of the Tuya switch."""
     import pytuya
 
     add_devices([TuyaDevice(
@@ -50,14 +50,11 @@ class TuyaDevice(Light):
         self._state = False
         self._brightness = 255
         self._hs_color = (0, 0)
-        self._brightness = 0
         self._rgbcolor = [0,0,0]
         self._supported_features = 0
         self._supported_features |= (SUPPORT_COLOR)
         self._supported_features |= (SUPPORT_BRIGHTNESS)
         self._supported_features |= (SUPPORT_COLOR_TEMP)
-        self._white_value_scale = 255
-        self._white_value = 0
         self._color_mode = False
         self._color_temp = 100
 
@@ -84,15 +81,15 @@ class TuyaDevice(Light):
         return self._supported_features
 
     def turn_on(self, **kwargs):
-        """Turn Tuya bulb on."""
+        """Turn Tuya switch on."""
         if not self._state:
             self._device.set_status(True)
 
         if ATTR_HS_COLOR in kwargs:
             hs_color = kwargs.get(ATTR_HS_COLOR)
             print("\n\n\n\n" + str(hs_color) + "\n\n\n\n")
-            brightness = kwargs.get(ATTR_BRIGHTNESS, self._brightness if self._brightness else 255)
-            rgb = color_util.color_hsv_to_RGB(hs_color[0], hs_color[1], brightness/255*100)
+            brightness = kwargs.get(ATTR_BRIGHTNESS)
+            rgb = color_util.color_hsv_to_RGB(hs_color[0], hs_color[1], brightness/500*100)
             try:
                 if rgb[0] < 240 or rgb[1] < 240 or rgb[2] < 240:
                     self._device.set_colour(rgb[0],rgb[1],rgb[2])
@@ -101,7 +98,7 @@ class TuyaDevice(Light):
                     self._brightness = brightness
                     self._rgbcolor = [rgb[0],rgb[1],rgb[2]]
                 else:
-                    self._device.set_white(brightness, self._color_temp)
+                    self._device.set_white(25 if int(brightness/500*255) < 25 else int(brightness/500*255), int((self._color_temp/500)*255))
                     self._color_mode = False                    
                     self._hs_color = hs_color
                     self._rgbcolor = [rgb[0],rgb[1],rgb[2]]
@@ -112,7 +109,7 @@ class TuyaDevice(Light):
         if ATTR_BRIGHTNESS in kwargs:
             brightness = kwargs.get(ATTR_BRIGHTNESS)
             if self._color_mode:
-                rgb = color_util.color_hsv_to_RGB(self._hs_color[0], self._hs_color[1], brightness/255*100)
+                rgb = color_util.color_hsv_to_RGB(self._hs_color[0], self._hs_color[1], brightness/500*100)
                 try:
                     self._device.set_colour(rgb[0],rgb[1],rgb[2])
                     self._brightness = brightness
@@ -121,7 +118,7 @@ class TuyaDevice(Light):
                     pass
             else:
                 try:
-                    self._device.set_white(brightness, self._color_temp)
+                    self._device.set_white(25 if int(brightness/500*255) < 25 else int(brightness/500*255), int((self._color_temp/500)*255))
                     self._brightness = brightness
                 except ConnectionError as e:
                     pass
@@ -129,14 +126,14 @@ class TuyaDevice(Light):
         if ATTR_COLOR_TEMP in kwargs:
             color_temp = kwargs.get(ATTR_COLOR_TEMP)
             try:
-                self._device.set_white(self._brightness, int((color_temp/500)*255))
+                self._device.set_white(25 if int(self._brightness/500*255) < 25 else int(self._brightness/500*255), int((color_temp/500)*255))
                 self._color_mode = False
                 self._color_temp = color_temp
             except ConnectionError as e:
                 pass
 
     def turn_off(self, **kwargs):
-        """Turn Tuya bulb off."""
+        """Turn Tuya switch off."""
         self._device.set_status(False)
         self._state = False
     
