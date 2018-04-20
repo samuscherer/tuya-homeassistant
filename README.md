@@ -4,8 +4,7 @@
 
 This is a simple platform to control **SOME** switch devices and bulbs that use the Tuya cloud for control.
 
-It uses the pytuya library (https://github.com/clach04/python-tuya) to directly control the devices. ATTENTION: The tuya_bulb.py DOES NOT use the pytuya version available via pip (which is installed automatically by HA if you use tuya.py). Plase use my fork of pytuya (https://github.com/samuscherer/python-tuya) until my changes are merged into the official pytuya version. Just replace the __init__.py file in "<home assistant config dir>/deps/lib/python3.6/site-packages/pytuya/" with the __init__.py file from my fork. If this directory doesn't exist just create it.
-
+It uses the pytuya library (https://github.com/clach04/python-tuya) to directly control the devices.
 Most devices that use the Tuya cloud should work. If port 6668 is open then it will work.
 
 switch id is if the switch device has multiple switches, the switch number.
@@ -28,7 +27,7 @@ switch:
 ```
 light:
   - platform: tuya
-    name: //switch name
+    name: //name
     host: //ip of device
     local_key: //localKey
     device_id: //devId
