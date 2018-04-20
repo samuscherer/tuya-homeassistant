@@ -12,7 +12,8 @@ switch id is if the switch device has multiple switches, the switch number.
 See here for how to find localKey and devId: https://github.com/codetheweb/tuyapi/blob/master/docs/SETUP.md
 
 To use switches, copy tuya.py to "<home assistant config dir>/custom_components/switch" and add config below to configuration.yaml
-The same goes for bulbs: Copy tuya_bulb.py to "<home assistant config dir>/custom_components/switch", rename it to tuya.py and add the config below.
+
+The same goes for bulbs: Copy tuya.py to "<home assistant config dir>/custom_components/light" and add the config below to configuration.yaml.
 
 Config Fields:
 ```
