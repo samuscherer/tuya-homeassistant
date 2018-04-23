@@ -87,7 +87,6 @@ class TuyaDevice(Light):
 
         if ATTR_HS_COLOR in kwargs:
             hs_color = kwargs.get(ATTR_HS_COLOR)
-            print("\n\n\n\n" + str(hs_color) + "\n\n\n\n")
             brightness = kwargs.get(ATTR_BRIGHTNESS, self._brightness if self._brightness else 255)
             rgb = color_util.color_hsv_to_RGB(hs_color[0], hs_color[1], brightness/500*100)
             try:
