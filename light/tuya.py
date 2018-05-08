@@ -10,7 +10,7 @@ from homeassistant.const import (CONF_NAME, CONF_HOST, CONF_ID)
 import homeassistant.helpers.config_validation as cv
 import homeassistant.util.color as color_util
 
-#REQUIREMENTS = ['pytuya==0.1']
+REQUIREMENTS = ['pytuya==7.0']
 
 CONF_DEVICE_ID = 'device_id'
 CONF_LOCAL_KEY = 'local_key'
